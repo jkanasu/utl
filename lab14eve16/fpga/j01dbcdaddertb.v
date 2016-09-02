@@ -8,7 +8,7 @@ module jbcdaddertb;
   reg [3:0]A,B;
   reg carryin;
   
-  jbcdadderManual jbcda(Y,carryout,carryin,A,B);
+  jbcdadder jbcda(Y,carryout,carryin,A,B);
   initial
   begin
     $display("RSLT\tA + B = C Y");
