@@ -7,7 +7,7 @@ module jserialadder(y,carryout,isValid,currentsum,currentcarryout,currentbitcoun
   output reg carryout;
   output reg isValid; // This is a new functionality to indicate that the 4 bits were considered to produce the output
   output reg currentsum, currentcarryout;
-  output reg [2:0]currentbitcount;// three bits enough to count till 4-bits for 4-bit serial adder
+  output reg [1:0]currentbitcount;// three bits enough to count till 4-bits for 4-bit serial adder
   input clk,rst;
   input a,b,carryin;
 
@@ -38,7 +38,7 @@ module jserialadder(y,carryout,isValid,currentsum,currentcarryout,currentbitcoun
     else
       begin
         y <= {currentsum, y[3:1]};
-        carryout <= ( currentbitcount == 3'd4 ) ? intermediatecarry : 0;
+        carryout <= currentcarryout;//( currentbitcount == 3'd4 ) ? intermediatecarry : 0;
       end
     end
 
@@ -49,7 +49,7 @@ module jserialadder(y,carryout,isValid,currentsum,currentcarryout,currentbitcoun
     if(rst)
         currentbitcount <= 0;
     else
-        currentbitcount <= (currentbitcount == 4) ? 0 : currentbitcount + 1; // already the 4 bit addition is completed
+        currentbitcount <= currentbitcount + 1; // already the 4 bit addition is completed
   end
 
   // isValid will provide the indication as to whether the addition is completed  
