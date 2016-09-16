@@ -153,3 +153,55 @@ module jserialaddertb;
   
 endmodule
 
+// Below is the test module for the lab provided code
+module jserialaddlabtb;
+  reg clk, reset, a, b;
+  wire sum, carry, cout;
+  wire [2:0] count;
+  wire [3:0] so;
+  
+  jserialaddlab jslab(a,b,clk,reset,sum,carry,cout,count,so);
+  
+  initial
+  begin
+    clk=1;reset=1;
+    a=0; b=0;
+    #10;
+    reset=0;
+    // Now send a = 0101 and b = 1010
+    a=1;b=0;
+    #10;
+    a=0;b=1;
+    #10;
+    a=1;b=0;
+    #10;
+    a=0;b=1;
+    #10;
+    // After four cycles the reset should be out
+    // check for 5 + 10 = 15 i.e. y = 1111 and carry = 0
+    
+    // Now send a = 0100 and b = 0110
+    a=0;b=0;
+    #10
+    a=0;b=1;
+    #10;
+    a=1;b=1;
+    #10
+    a=0;b=0;
+    #10;
+    // After four cycles the reset should be out
+    // check for 4 + 6 = 10 i.e. y = 1010 and carry = 0
+    #100;
+    #10;
+    // why would the above line not break
+    #10;
+  end
+  
+  always #5 clk=~clk;
+  always @(posedge clk)
+  begin
+    if(count == 3'b100)
+      $display("The carry and sum are = %d %d", carry, so);
+  end
+  
+endmodule
