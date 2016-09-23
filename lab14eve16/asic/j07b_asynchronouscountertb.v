@@ -6,9 +6,9 @@ module jAsynchronousCountertb;
   begin
     clk = 0;
     rst = 1; 
-    #50;// Just give enough time to reset the design
+    #23;// Just give enough time to reset the design
     rst = 0;
-    #100;
+    #200;
     $finish;
   end
   always #5 clk = ~clk;

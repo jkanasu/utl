@@ -11,7 +11,9 @@ module jAsyncCntrDFlipFlop(q,qbar,clk,rst,d);
 
 	assign qbar = ~q;
 
-	always @(posedge clk)
+  // NOTE it is important to mention the edge for each of the parameter
+  // if it is not mentioned default is all edges i.e. positive and negative edges
+	always @(posedge clk, posedge rst)
 	begin
 		if (rst)
 			q <= 0;
