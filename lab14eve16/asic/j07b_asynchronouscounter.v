@@ -1,6 +1,7 @@
 /* 
 First construct a D-Flipflop and then reuse this in the asynchronous counter
 In fact this is a reuse of the dflipflop code already done in an earlier exercise
+NOTE the difference is that the reset signal is also part of the sensitivity list
 Just the name of the module is changed so that there is no conflict
 */
 module jAsyncCntrDFlipFlop(q,qbar,clk,rst,d);
