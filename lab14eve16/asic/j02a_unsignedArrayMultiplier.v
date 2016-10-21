@@ -36,16 +36,16 @@ module junsignedArrayMultiplier(PRODUCT, A, B);
 
   // First row
   // Bit 1 of the product as well
-	jhalfadder jha01 ( PRODUCT[1], C[0], W[0],W[3] );
+	jhalfadder jha01 ( PRODUCT[1], C[0], W[0], W[3] );
   jfulladder jfa01 ( S[0], C[1], W[1], W[4], C[0] );
   jfulladder jfa02 ( S[1], C[2], W[2], W[5], C[1] );
 	jhalfadder jha02 ( S[2], C[3], W[6], C[2] );
 
   // Next row
 	jhalfadder jha03 ( PRODUCT[2], C[4], W[7], S[0] );
-  jfulladder jfa03 ( S[3], C[5], W[8], W[4], C[4] );
-  jfulladder jfa04 ( S[4], C[6], W[9], W[5], C[5] );
-  jfulladder jfa05 ( S[5], C[7], W[10], W[5], C[6] );
+  jfulladder jfa03 ( S[3], C[5], W[8], S[1], C[4] );
+  jfulladder jfa04 ( S[4], C[6], W[9], S[2], C[5] );
+  jfulladder jfa05 ( S[5], C[7], W[10], S[3], C[6] );
   
   // Next row
 	jhalfadder jha04 ( PRODUCT[3], C[8], W[11], S[3] );
@@ -53,18 +53,4 @@ module junsignedArrayMultiplier(PRODUCT, A, B);
   jfulladder jfa07 ( PRODUCT[5], C[10], W[13], S[5], C[9] );
   jfulladder jfa08 ( PRODUCT[6], PRODUCT[7], W[14], C[7], C[10] );
   
-  /*
-  
-  
-	jhalfadder jha(sum,carry,a,b);
-	jhalfadder jha(sum,carry,a,b);
-
-  jfulladder jfa0(Y[0],c1,A[0],B[0],carryin);
-  jfulladder jfa1(Y[1],c2,A[1],B[1],c1);
-  jfulladder jfa2(Y[2],c3,A[2],B[2],c2);
-  jfulladder jfa3(Y[3],carryout,A[3],B[3],c3);
-  */
-
 endmodule
-
-// Below is the half adder module
