@@ -45,7 +45,7 @@ module junsignedArrayMultiplier(PRODUCT, A, B);
 	jhalfadder jha03 ( PRODUCT[2], C[4], W[7], S[0] );
   jfulladder jfa03 ( S[3], C[5], W[8], S[1], C[4] );
   jfulladder jfa04 ( S[4], C[6], W[9], S[2], C[5] );
-  jfulladder jfa05 ( S[5], C[7], W[10], S[3], C[6] );
+  jfulladder jfa05 ( S[5], C[7], W[10], C[3], C[6] );
   
   // Next row
 	jhalfadder jha04 ( PRODUCT[3], C[8], W[11], S[3] );

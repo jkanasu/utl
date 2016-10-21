@@ -13,7 +13,7 @@ module junsignedArrayMultiplierTb;
     else
       $display("FAIL\t%p x %p = %p",A,B,Y);
     A = 3; B = 3; #10;
-    if ( Y == 4 )
+    if ( Y == 9 )
       $display("PASS\t%p x %p = %p",A,B,Y);
     else
       $display("FAIL\t%p x %p = %p",A,B,Y);
