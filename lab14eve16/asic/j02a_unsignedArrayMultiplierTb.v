@@ -37,6 +37,11 @@ module junsignedArrayMultiplierTb;
       $display("PASS\t%p x %p = %p",A,B,Y);
     else
       $display("FAIL\t%p x %p = %p",A,B,Y);
+    A = 15; B = 15; #10;
+    if ( Y == 225 )
+      $display("PASS\t%p x %p = %p",A,B,Y);
+    else
+      $display("FAIL\t%p x %p = %p",A,B,Y);
   end
   
 endmodule
