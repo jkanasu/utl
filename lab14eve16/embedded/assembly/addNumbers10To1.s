@@ -11,8 +11,9 @@ addNumbers10To1
 		MOV R2, #10 ; Use R2 as the counter or start number
 		
 addLoop
-		ADD R1, R2 ; Add the numbers one by one to R0
+		ADD R1, R2 ; Add the numbers one by one to R1
 		SUBS R2, #1 ; R1 will contain the next number
 		BNE addLoop
+		BX LR ; This will load the LR into the PC, hence return to the calling function
 		
 		END

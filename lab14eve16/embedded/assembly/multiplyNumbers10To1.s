@@ -18,6 +18,6 @@ multiplyLoop
 		MOV R2, R1     ; Previous multiplication result is stored into R2 which will be multiplicand next cycle
 		SUBS R3, #1		; Change the counter to next values i.e. 10... 9... 8... 7...
 		BNE multiplyLoop
-		
+		BX LR ; This will load the LR into the PC, hence return to the calling function
 		END
 		
