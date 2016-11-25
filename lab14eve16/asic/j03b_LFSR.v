@@ -10,7 +10,7 @@ module jLFSR(Q, clock, reset);
     if(reset)
       Q <= 4'b1111;
     else
-      Q <= { Q[2:0], (Q[3] ^ Q[0]) };
+      Q <= { (Q[3] ^ Q[0]) , Q[3:1] };
   end
     
 endmodule
