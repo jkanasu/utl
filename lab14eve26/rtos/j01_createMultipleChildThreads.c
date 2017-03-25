@@ -9,7 +9,7 @@
 pthread_t childThreads[NUM_CHILD_THREADS];
 
 // Note the pointer * to function name as well as argument
-void *printContinuously(void *arg)
+void *printMessages(void *arg)
 {
 	long tid;
 	tid = (long)arg;
@@ -19,10 +19,14 @@ void *printContinuously(void *arg)
 	{
 		sleepValue = 3 + rand() % 10;// value between 3 and 13 seconds
 		printf("I'm in thread number %3ld - message num %2d - sleep for %2d\n",tid, m, sleepValue);
-		sleep(sleepValue);
+		// below function takes microseconds
+		usleep(sleepValue * 1000 * 1000);
 	}
+	// We can simply return or explicitly call the below function
+	// pthread_exit((void *)arg);
 }
 
+// This function creates the child threads and also joins them to the main thread
 void createChildThreads()
 {
 	int rc;
@@ -35,7 +39,7 @@ void createChildThreads()
 	// Start creating the child threads
 	for(t=0; t<NUM_CHILD_THREADS; t++)
 	{
-		rc = pthread_create(&childThreads[t], &attribute, printContinuously, (void *)t+1);
+		rc = pthread_create(&childThreads[t], &attribute, printMessages, (void *)t+1);
 		if(rc)
 		{
 			printf("Error creating thread %2d : return code %2d\n", t, rc);
@@ -58,15 +62,13 @@ void createChildThreads()
 		}
 		printf("Completed Join thread %2d : return status %2ld\n", t+1, (long)status);
 	}
-
 }
 
+// the main function to this process
 int main(int argc, char *argv[])
 {
 	printf("Main program starting %s\n", "jaggi");
 	createChildThreads();
-	//printf("Main program entering infinite printing %s\n", "jaggi");
-	//printContinuously((void *)999);
 	printf("Main program exiting %s\n", "jaggi");
 	return 0;
 }
