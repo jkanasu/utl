@@ -5,8 +5,7 @@
 #include <pthread.h>
 #include <errno.h>
 
-#define NUM_CHILD_THREADS 4
-#define NUM_OF_PRINTS 25
+#define NUM_OF_PRINTS 13
 
 pthread_t childThreadA;
 pthread_t childThreadB;
@@ -57,16 +56,10 @@ void *printMessages(void *arg)
 	sprintf(name, "jagi_%ld", tid);
 
 	int sleepValue;
-	//display_thread_sched_attr(name);//"jagi");
-	//usleep(100 * 1000 * 1000);
 	for(int m=1; m<=NUM_OF_PRINTS; m++)
 	{
 		display_thread_sched_attr(name);//"jagi");
-		printf(" thread number %3ld - multiplication iter num %2d\n", tid, m);
-		//sleepValue = 3 + rand() % 10;// value between 3 and 13 seconds
-		//display_thread_sched_attr(name);//"jagi");
-		// below function takes microseconds
-		//usleep(sleepValue * 1000 * 1000);
+		printf(" thread number %3ld - multiplication iter num %2d", tid, m);
 		long i = 1234567890;
 		long j = 1234567890;
 		for (int mult=0; mult<=123; mult++)
@@ -95,7 +88,6 @@ void createChildThreads()
 	pthread_attr_t custom_attributeA;
 	pthread_attr_init(&custom_attributeA);
 	pthread_attr_setdetachstate(&custom_attributeA, PTHREAD_CREATE_JOINABLE);
-	pthread_attr_setdetachstate(&custom_attributeA, PTHREAD_CREATE_JOINABLE);
 	pthread_attr_setinheritsched(&custom_attributeA, PTHREAD_EXPLICIT_SCHED);
 	pthread_attr_setschedpolicy(&custom_attributeA, SCHED_FIFO);
 	struct sched_param fifo_paramA;
@@ -106,16 +98,16 @@ void createChildThreads()
 	rc = pthread_create(&childThreadA, &custom_attributeA, printMessages, (void *)t);
 	if(rc)
 	{
-		printf("Error creating thread %2d : return code %2d\n", t, rc);
+		printf("\nError creating thread %2d : return code %2d", t, rc);
 		return;
 	}
-	printf("*** Finished creating child threads A *** \n");
+	printf("\n*** Finished creating child thread A ***");
 	// Free up the attribute
 	pthread_attr_destroy(&custom_attributeA);
 
 	//int prio = pthread_getschedparam();
-	sleepValue = 2;
-	printf("Before creating child thread B - Wait for %2d \n", sleepValue);
+	sleepValue = 1;
+	printf("\nBefore creating child thread B - Wait for %2d", sleepValue);
 	// below function takes microseconds
 	usleep(sleepValue * 1000 * 1000);
 
@@ -135,56 +127,50 @@ void createChildThreads()
 	if(rc)
 	{
                 if (rc != 0)  handle_error_en(rc, "pthread_create");
-		printf("Error creating thread %2d : return code %2d\n", t, rc);
+		printf("\nError creating thread %2d : return code %2d\n", t, rc);
 		return;
 	}
-	printf("*** Finished creating child threads B *** \n");
+	printf("\n*** Finished creating child thread B ***");
 	// Free up the attribute
 	pthread_attr_destroy(&custom_attributeB);
 
-	printf("*** Finished creating child threads A & B*** \n");
-
-	sleepValue = 3 + rand() % 5;// value between 3 and 3+5 seconds
-
-	//int prio = pthread_getschedparam();
-	printf("Before changing priority - Wait for %2d \n", sleepValue);
+	sleepValue = 2 + rand() % 3;// value between 2 and 2+3 seconds
+	printf("\nBefore changing priority - Wait for %2d", sleepValue);
 	// below function takes microseconds
 	usleep(sleepValue * 1000 * 1000);
-	printf("Changing priority of child thread A");
+	printf("\nChanging priority of child thread A");
 	struct sched_param dynamic_fifo_param;
-	// choose the same 15 a higher as the arbitrary priority for the thread
+	// choose 15 a higher value for thread A than that of thread B
 	dynamic_fifo_param.sched_priority = 15;//sched_get_priority_max(SCHED_FIFO);
 	pthread_setschedparam(childThreadA, SCHED_FIFO, &dynamic_fifo_param);
-
 
 	// Start joining the threads
 	// NOTE only one thread can be joined at a time
 	void *status;
-	printf("*** Joining thread *** A\n");
+	printf("\n*** Joining thread *** A");
 	rc = pthread_join(childThreadA, &status);
 	if(rc)
 	{
 		printf("Error joining thread A : return code %2d\n", rc);
 	}
-	printf("Completed Join thread A : return status %2ld\n", (long)status);
+	printf("\nCompleted Join thread A : return status %2ld", (long)status);
 
-	printf("*** Joining thread *** B\n");
+	printf("\n*** Joining thread *** B");
 	rc = pthread_join(childThreadB, &status);
 	if(rc)
 	{
 		printf("Error joining thread B : return code %2d\n", rc);
 	}
-	printf("Completed Join thread B : return status %2ld\n", (long)status);
-
+	printf("\nCompleted Join thread B : return status %2ld", (long)status);
 }
 
 // the main function to this process
 int main(int argc, char *argv[])
 {
-	printf("Main program starting %s\n", "jaggi");
-	checkPthreadSupport();
+	//printf("\nMain program starting %s", "jaggi");
+	//checkPthreadSupport();
 	createChildThreads();
-	printf("Main program exiting %s\n", "jaggi");
+	//printf("\nMain program exiting %s", "jaggi");
 	return 0;
 }
 
