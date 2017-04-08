@@ -88,15 +88,22 @@ void createChildThreads()
 	int rc;
 	int t=0;
 
-	// NOTE : we need root permissions to run this program
-	// Initialize the thread to be joinable
-	pthread_attr_t attributeA;
-	pthread_attr_init(&attributeA);
-	pthread_attr_setdetachstate(&attributeA, PTHREAD_CREATE_JOINABLE);
 	// Start creating the child threads
 	// childThread A
+	// NOTE : we need root permissions to run this program
+	// Initialize the thread to be joinable
+	pthread_attr_t custom_attributeA;
+	pthread_attr_init(&custom_attributeA);
+	pthread_attr_setdetachstate(&custom_attributeA, PTHREAD_CREATE_JOINABLE);
+	pthread_attr_setdetachstate(&custom_attributeA, PTHREAD_CREATE_JOINABLE);
+	pthread_attr_setinheritsched(&custom_attributeA, PTHREAD_EXPLICIT_SCHED);
+	pthread_attr_setschedpolicy(&custom_attributeA, SCHED_FIFO);
+	struct sched_param fifo_paramA;
+	// choose 10 as the arbitrary priority for the thread
+	fifo_paramA.sched_priority = 10;//sched_get_priority_max(SCHED_FIFO);
+	pthread_attr_setschedparam(&custom_attributeA, &fifo_paramA);
 	t = t + 1;
-	rc = pthread_create(&childThreadA, &attributeA, printMessages, (void *)t);
+	rc = pthread_create(&childThreadA, &custom_attributeA, printMessages, (void *)t);
 	if(rc)
 	{
 		printf("Error creating thread %2d : return code %2d\n", t, rc);
@@ -104,7 +111,7 @@ void createChildThreads()
 	}
 	printf("*** Finished creating child threads A *** \n");
 	// Free up the attribute
-	pthread_attr_destroy(&attributeA);
+	pthread_attr_destroy(&custom_attributeA);
 
 	//int prio = pthread_getschedparam();
 	sleepValue = 2;
@@ -120,8 +127,8 @@ void createChildThreads()
 	pthread_attr_setinheritsched(&custom_attributeB, PTHREAD_EXPLICIT_SCHED);
 	pthread_attr_setschedpolicy(&custom_attributeB, SCHED_FIFO);
 	struct sched_param fifo_param;
-	fifo_param.sched_priority = 10;//sched_get_priority_max(SCHED_FIFO);
-	printf("child B sched priority %d",fifo_param.sched_priority);
+	// choose the same 11 as the arbitrary priority for the thread
+	fifo_param.sched_priority = 11;//sched_get_priority_max(SCHED_FIFO);
 	pthread_attr_setschedparam(&custom_attributeB, &fifo_param);
 	t = t + 1;
 	rc = pthread_create(&childThreadB, &custom_attributeB, printMessages, (void *)t);
@@ -137,12 +144,17 @@ void createChildThreads()
 
 	printf("*** Finished creating child threads A & B*** \n");
 
-	sleepValue = 5 + rand() % 10;// value between 5 and 5+10 seconds
+	sleepValue = 3 + rand() % 5;// value between 3 and 3+5 seconds
 
 	//int prio = pthread_getschedparam();
 	printf("Before changing priority - Wait for %2d \n", sleepValue);
 	// below function takes microseconds
 	usleep(sleepValue * 1000 * 1000);
+	printf("Changing priority of child thread A");
+	struct sched_param dynamic_fifo_param;
+	// choose the same 15 a higher as the arbitrary priority for the thread
+	dynamic_fifo_param.sched_priority = 15;//sched_get_priority_max(SCHED_FIFO);
+	pthread_setschedparam(childThreadA, SCHED_FIFO, &dynamic_fifo_param);
 
 
 	// Start joining the threads
