@@ -1,3 +1,4 @@
+// NOTE : we need root permissions to run this program
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -19,33 +20,33 @@ void checkPthreadSupport()
 }
 // Below code courtesy
 // http://man7.org/linux/man-pages/man3/pthread_getschedparam.3.html
-       #define handle_error_en(en, msg) \
-               do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
+#define handle_error_en(en, msg) \
+	   do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
 
-       static void
-       display_sched_attr(int policy, struct sched_param *param)
-       {
-           printf("policy=%s, priority=%d,",
-                   (policy == SCHED_FIFO)  ? "SCHED_FIFO" :
-                   (policy == SCHED_RR)    ? "SCHED_RR" :
-                   (policy == SCHED_OTHER) ? "SCHED_OTHER" :
-                   "???",
-                   param->sched_priority);
-       }
+static void
+display_sched_attr(int policy, struct sched_param *param)
+{
+   printf("policy=%s, priority=%d,",
+		   (policy == SCHED_FIFO)  ? "SCHED_FIFO" :
+		   (policy == SCHED_RR)    ? "SCHED_RR" :
+		   (policy == SCHED_OTHER) ? "SCHED_OTHER" :
+		   "???",
+		   param->sched_priority);
+}
 
-       static void
-       display_thread_sched_attr(char *msg)
-       {
-           int policy, s;
-           struct sched_param param;
+static void
+display_thread_sched_attr(char *msg)
+{
+   int policy, s;
+   struct sched_param param;
 
-           s = pthread_getschedparam(pthread_self(), &policy, &param);
-           if (s != 0)
-               handle_error_en(s, "pthread_getschedparam");
+   s = pthread_getschedparam(pthread_self(), &policy, &param);
+   if (s != 0)
+	   handle_error_en(s, "pthread_getschedparam");
 
-           printf("\n%s ", msg);
-           display_sched_attr(policy, &param);
-       }
+   printf("\n%s ", msg);
+   display_sched_attr(policy, &param);
+}
 
 // Note the pointer * to function name as well as argument
 void *printMessages(void *arg)
@@ -87,6 +88,7 @@ void createChildThreads()
 	int rc;
 	int t=0;
 
+	// NOTE : we need root permissions to run this program
 	// Initialize the thread to be joinable
 	pthread_attr_t attributeA;
 	pthread_attr_init(&attributeA);
