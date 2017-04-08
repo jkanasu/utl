@@ -5,7 +5,7 @@
 #include <pthread.h>
 #include <errno.h>
 
-#define NUM_OF_PRINTS 13
+#define NUM_OF_PRINTS 25
 
 pthread_t childThreadA;
 pthread_t childThreadB;
@@ -81,6 +81,7 @@ void createChildThreads()
 	int rc;
 	int t=0;
 
+	display_thread_sched_attr("main");
 	// Start creating the child threads
 	// childThread A
 	// NOTE : we need root permissions to run this program
