@@ -100,6 +100,7 @@ void createChildThreads()
 	if(rc)
 	{
 		printf("\nError creating thread %2d : return code %2d", t, rc);
+		handle_error_en(rc, "pthread_create");
 		return;
 	}
 	printf("\n*** Finished creating child thread A ***");
