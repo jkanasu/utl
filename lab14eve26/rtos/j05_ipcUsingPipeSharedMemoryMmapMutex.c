@@ -56,9 +56,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 
-#define SHM_ID 789   // to be known both by server and client
-#define MUTEX_ID 545 // to be known both by server and client
+#define SHM_ID 789     // to be known both by server and client
+#define MUTEX_ID 545   // to be known both by server and client
 
 char * processName = "UNKNOWN";
 char * serverName = "SERVER";
@@ -71,6 +72,7 @@ char * clientName = "CLIENT";
 void enterServerMode(pid_t childPid);
 void createAndMmapTheSharedMemoryInServer();
 void createTheMutexInServer();
+void sendEvent(pid_t childPid);
 void sendMessages();
 
 /*
@@ -78,6 +80,8 @@ void sendMessages();
  *
 */
 void enterClientMode();
+void registerForEvent();
+void receiveEvent();
 void accessMmapTheSharedMemoryInClient();
 void receiveMessages();
 
@@ -107,6 +111,7 @@ void enterServerMode(pid_t childPid){
 	printf("\nEntering %s Mode", processName);
 	createAndMmapTheSharedMemoryInServer();
 	createTheMutexInServer();
+	sendEvent(childPid);
 	sendMessages();
 }
 
@@ -116,6 +121,14 @@ void createAndMmapTheSharedMemoryInServer(){
 void createTheMutexInServer(){
 	
 }
+
+void sendEvent(pid_t childPid){
+	printf("\n%s sending event to %d",processName, childPid);
+	int sleepValue = 5;
+	usleep(sleepValue * 1000 * 1000);
+	kill(childPid, SIGUSR1);
+}
+
 void sendMessages(){
 	for(int i =1; i<=10; i++){
 		printf("\n%s accessing mutex object %d", processName,i);
@@ -128,10 +141,31 @@ void sendMessages(){
 /*
  * Client side code starts below
 */
+int isEventReceived = -1;
+
 void enterClientMode(){
 	printf("\nEntering %s Mode", processName);
+	registerForEvent();
+	// Wait for the event to be received
+	while(isEventReceived < 0){
+		printf("\n%s waiting for event", processName);
+		int sleepValue = 2;
+		usleep(sleepValue * 1000 * 1000);
+	}
 	accessMmapTheSharedMemoryInClient();
 	receiveMessages();
+}
+
+void registerForEvent(){
+	printf("\n%s Registering for events", processName);
+	if(signal(SIGUSR1,receiveEvent)==SIG_ERR){
+		//printf("Error in registering for events %d", errno);
+		perror("CLIENT");
+	}
+}
+
+void receiveEvent(){
+	isEventReceived = 1;
 }
 
 void accessMmapTheSharedMemoryInClient(){
