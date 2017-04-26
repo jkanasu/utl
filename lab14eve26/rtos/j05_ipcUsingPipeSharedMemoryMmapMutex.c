@@ -1,5 +1,11 @@
-// Reference https://www.ibm.com/developerworks/aix/library/au-spunix_sharedmemory/
-
+// Reference 
+// http://man7.org/training/download/posix_shm_slides.pdf
+// https://www.ibm.com/developerworks/aix/library/au-spunix_sharedmemory/
+// https://users.cs.cf.ac.uk/Dave.Marshall/C/node27.html
+// http://man7.org/linux/man-pages/man7/shm_overview.7.html
+// 
+// Compile with gcc -lrt
+//
 /*
  * Problem statement:
  * 
@@ -57,8 +63,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
-#define SHM_ID 789     // to be known both by server and client
+#define SHM_NAME "JAGI789"     // to be known both by server and client
 #define MUTEX_ID 545   // to be known both by server and client
 
 char * processName = "UNKNOWN";
@@ -70,19 +82,21 @@ char * clientName = "CLIENT";
  *
 */
 void enterServerMode(pid_t childPid);
-void createAndMmapTheSharedMemoryInServer();
+void createPipeInServer();
 void createTheMutexInServer();
+void createSharedMemoryAndMmapInServer();
 void sendEvent(pid_t childPid);
 void sendMessages();
+void closePipeInServer();
 
 /*
- * Below are the server side functions
+ * Below are the client side functions
  *
 */
 void enterClientMode();
 void registerForEvent();
 void receiveEvent();
-void accessMmapTheSharedMemoryInClient();
+void accessSharedMemoryAndMmapInClient();
 void receiveMessages();
 
 /*
@@ -107,19 +121,38 @@ int main ()
 	printf("\n%s Main is Exiting", processName);
 }
 
+/*
+ * Server side code starts below
+*/
+int shmid;
+int pipefdInServer[2];
+
 void enterServerMode(pid_t childPid){
 	printf("\nEntering %s Mode", processName);
-	createAndMmapTheSharedMemoryInServer();
+	createPipeInServer();
 	createTheMutexInServer();
+	createSharedMemoryAndMmapInServer();
 	sendEvent(childPid);
 	sendMessages();
+	closePipeInServer();
 }
 
-void createAndMmapTheSharedMemoryInServer(){
-	
+void createPipeInServer(){
+	if(pipe(pipefdInServer) == -1) {
+		perror("pipe");
+		printf("%s error is creating pipe", processName);
+		exit(EXIT_FAILURE);
+	}
+	// later the read end of this pipe i.e. pipefdInServer[0] will be passed to server
+	printf("%s created the pipe read-end:%d write-end:%d", processName, pipefdInServer[0], pipefdInServer[1]);
 }
+
 void createTheMutexInServer(){
 	
+}
+
+void createSharedMemoryAndMmapInServer(){
+	//shmid = shm_open()
 }
 
 void sendEvent(pid_t childPid){
@@ -138,6 +171,12 @@ void sendMessages(){
 	}
 }
 
+void closePipeInServer(){
+	close(pipefdInServer[0]);
+	close(pipefdInServer[1]);
+	printf("\n%s closed pipes in server", processName);
+}
+
 /*
  * Client side code starts below
 */
@@ -152,7 +191,7 @@ void enterClientMode(){
 		int sleepValue = 2;
 		usleep(sleepValue * 1000 * 1000);
 	}
-	accessMmapTheSharedMemoryInClient();
+	accessSharedMemoryAndMmapInClient();
 	receiveMessages();
 }
 
@@ -168,7 +207,7 @@ void receiveEvent(){
 	isEventReceived = 1;
 }
 
-void accessMmapTheSharedMemoryInClient(){
+void accessSharedMemoryAndMmapInClient(){
 	printf("\n%s Accessing the Shared Memory", processName);
 }
 void receiveMessages(){
